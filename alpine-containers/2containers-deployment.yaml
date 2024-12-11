@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpine-containers
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alpine-containers
+  template:
+    metadata:
+      labels:
+        app: alpine-containers
+    spec:
+      volumes:
+      - name: mount-volume
+        emptyDir: {}
+
+      containers:
+      - name: alpine-container-1
+        image: alpine:latest
+        command: ["/bin/sh", "-c", "i=1; while true; do echo 'Log $i' > /mount/log$i.txt; i=$((i+1)); sleep 60; done"]
+        volumeMounts:
+        - mountPath: /mount
+          name: mount-volume
+
+      - name: alpine-container-2
+        image: alpine:latest
+        command: ["/bin/sh", "-c", "i=1; while true; do echo 'File $i' > /mount/file$i.txt; i=$((i+1)); sleep 60; done"]
+        volumeMounts:
+        - mountPath: /mount
+          name: mount-volume
+
